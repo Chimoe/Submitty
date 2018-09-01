@@ -56,23 +56,18 @@ class HomePageController extends AbstractController {
         $user = $this->core->getUser();
         if(isset($_POST['user_name_change']))
         {
-            $newName = trim($_POST['user_name_change']);
-            if ($user->validateUserData('user_preferred_firstname', $newName) === true) {
-                if(strlen($newName) <= 30)
-                {
-                    $user->setPreferredFirstName($newName);
-					//User updated flag tells auto feed to not clobber some of the users data.
-                    $user->setUserUpdated(true);
-                    $this->core->getQueries()->updateUser($user);
-                }
-                else
-                {
-                    $this->core->addErrorMessage("Invalid Username. Please use 30 characters or fewer.");
-                }
+            $newFirstName = trim($_POST['user_firstname_change']);
+            $newLastName = trim($_POST['user_lastname_change']);
+            if ($user->validateUserData('user_preferred_firstname', $newFirstName) === true) && ($user->validateUserData('user_preferred_lastname', $newLastName) === true) {
+				$user->setPreferredFirstName($newFirstName);
+				$user->setPreferredLastName($newLastName);
+				//User updated flag tells auto feed to not clobber some of the users data.
+				$user->setUserUpdated(true);
+				$this->core->getQueries()->updateUser($user);
             }
             else
             {
-                $this->core->addErrorMessage("Invalid Username.  Letters, spaces, hyphens, apostrophes, periods, parentheses, and backquotes permitted.");
+                $this->core->addErrorMessage("Preferred Name(s) must be 30 characters or fewer.  Letters, spaces, hyphens, apostrophes, periods, parentheses, and backquotes permitted.");
             }
         }
     }

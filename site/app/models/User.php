@@ -60,12 +60,16 @@ class User extends AbstractModel {
     protected $password = null;
     /** @property @var string The first name of the user */
     protected $first_name;
-    /** @property @var string The first name of the user */
+    /** @property @var string The preferred first name of the user */
     protected $preferred_first_name = "";
-    /** @property @var  string The name to be displayed by the system (either preferred name or first name) */
+    /** @property @var  string The first name to be displayed by the system (either preferred name or first name) */
     protected $displayed_first_name;
     /** @property @var string The last name of the user */
     protected $last_name;
+    /** @property @var string The preefrred last name of the user */
+    protected $preferred_last_name = "";
+    /** @property @var  string The last name to be displayed by the system (either preferred name or last name) */
+    protected $displayed_last_name;
     /** @property @var string The email of the user */
     protected $email;
     /** @property @var int The group of the user, used for access controls (ex: student, instructor, etc.) */
@@ -193,17 +197,25 @@ class User extends AbstractModel {
      * Set the preferred name of the loaded user (does not affect db. call updateUser.)
      * @param string $name
      */
-    public function setPreferredFirstName($name) {
-        $this->preferred_first_name = $name;
-        $this->setDisplayedFirstName();
+    public function setPreferredNames($firstname, $lastname) {
+        $this->preferred_first_name = $firstname;
+        $this->preferred_last_name = $lastname
+        $this->setDisplayedNames();
     }
 
-    private function setDisplayedFirstName() {
+    private function setDisplayedNames() {
         if ($this->preferred_first_name !== "" && $this->preferred_first_name !== null) {
             $this->displayed_first_name = $this->preferred_first_name;
         }
         else {
             $this->displayed_first_name = $this->first_name;
+        }
+
+        if ($this->preferred_last_name !== "" && $this->preferred_last_name !== null) {
+            $this->displayed_last_name = $this->preferred_last_name;
+        }
+        else {
+            $this->displayed_last_name = $this->last_name;
         }
     }
 
@@ -258,8 +270,9 @@ class User extends AbstractModel {
 		case 'user_firstname':
 		case 'user_lastname':
 		case 'user_preferred_firstname':
-			//First, Last, Preferred name must be alpha characters, white-space, or certain punctuation.
-        	return preg_match("~^[a-zA-Z'`\-\.\(\) ]+$~", $data) === 1;
+		case 'user_preferred_lastname':
+			//First, Last, Preferred names must be alpha characters, white-space, or certain punctuation and limited to 30 chars.
+        	return preg_match("~^[a-zA-Z'`\-\.\(\) ]+$~", $data) === 1 && strlen($data) <= 30;
 		case 'user_email':
 			//Check email address for appropriate format. e.g. "user@university.edu", "user@cs.university.edu", etc.
 			return preg_match("~^[^(),:;<>@\\\"\[\]]+@(?!\-)[a-zA-Z0-9\-]+(?<!\-)(\.[a-zA-Z0-9]+)+$~", $data) === 1;
@@ -268,7 +281,7 @@ class User extends AbstractModel {
 			return preg_match("~^[1-4]{1}$~", $data) === 1;
 		case 'registration_section':
 			//Registration section must contain only alpha, numbers, underscores, hyphens
-			return preg_match("~^[A-Za-z0-9_\-]+$~", $data) === 1;	
+			return preg_match("~^[A-Za-z0-9_\-]+$~", $data) === 1;
 		case 'user_password':
 	        //Database password cannot be blank, no check on format
 			return $data !== "";

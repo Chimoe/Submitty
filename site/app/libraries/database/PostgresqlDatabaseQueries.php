@@ -68,7 +68,7 @@ GROUP BY user_id", array($user_id));
         else {
           $orderBy = "u.{$section_key}, u.user_id";
         }
-        
+
         $this->course_db->query("
 SELECT u.*, sr.grading_registration_sections
 FROM users u
@@ -134,7 +134,7 @@ VALUES (?,?,?,?,?,?)", $params);
 
     public function updateUser(User $user, $semester=null, $course=null) {
         $params = array($user->getFirstName(), $user->getPreferredFirstName(),
-                       $user->getLastName(), $user->getEmail(),
+                       $user->getLastName(), $user->getPreferredLastName(), $user->getEmail(),
                        $this->submitty_db->convertBoolean($user->isUserUpdated()),
                        $this->submitty_db->convertBoolean($user->isInstructorUpdated()));
         $extra = "";
@@ -147,7 +147,7 @@ VALUES (?,?,?,?,?,?)", $params);
         $this->submitty_db->query("
 UPDATE users
 SET
-  user_firstname=?, user_preferred_firstname=?, user_lastname=?,
+  user_firstname=?, user_preferred_firstname=?, user_lastname=?, user_preferred_lastname=?,
   user_email=?, user_updated=?, instructor_updated=?{$extra}
 WHERE user_id=?", $params);
 
@@ -458,12 +458,12 @@ WHERE ".implode(" AND ", $where);
         }
         $order_by = [];
         if ($user_ids !== null) {
-            if ($section_key == "rotating_section") { 
+            if ($section_key == "rotating_section") {
               $order_by[] = "u.rotating_section";
             }
             else if ($section_key == "registration_section"){
               $order_by[] = "SUBSTRING(u.registration_section, '^[^0-9]*'), COALESCE(SUBSTRING(u.registration_section, '[0-9]+')::INT, -1), SUBSTRING(u.registration_section, '[^0-9]*$')";
-            }  
+            }
             $order_by[] = $sort_key;
         }
         $order_by = array_merge($order_by, $extra_order_by);
@@ -1184,9 +1184,9 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
 
         $query = "
             SELECT /* Select everything we retrieved */
-            
+
               g.g_id,
-            
+
               /* Gradeable Data */
               gd.gd_id AS id,
               gd.gd_overall_comment AS overall_comment,
@@ -1291,10 +1291,10 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
                   ) AS tu ON gt.team_id = tu.team_id
                 GROUP BY gt.team_id
               ) AS team ON eg.team_assignment AND EXISTS (
-                SELECT 1 FROM gradeable_teams gt 
-                WHERE gt.team_id=team.team_id AND gt.g_id=g.g_id 
+                SELECT 1 FROM gradeable_teams gt
+                WHERE gt.team_id=team.team_id AND gt.g_id=g.g_id
                 LIMIT 1)
-                         
+
               /* Join manual grading data */
               LEFT JOIN (
                 SELECT *
@@ -1370,13 +1370,13 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
                 SELECT *
                 FROM electronic_gradeable_version
               ) AS egv ON (egv.team_id=egd.team_id OR egv.user_id=egd.user_id) AND egv.g_id=egd.g_id
-              
+
               /* Join user late day exceptions */
               LEFT JOIN late_day_exceptions ldeu ON g.g_id=ldeu.g_id AND u.user_id=ldeu.user_id
-              
+
               /* Join team late day exceptions */
               LEFT JOIN (
-                SELECT 
+                SELECT
                   json_agg(e.late_day_exceptions) AS array_late_day_exceptions,
                   json_agg(e.user_id) AS array_late_day_user_ids,
                   t.team_id,
@@ -1644,8 +1644,8 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
                   json_agg(gc_order) AS array_order,
                   json_agg(gc_page) AS array_page,
                     json_agg(EXISTS(
-                      SELECT gc_id 
-                      FROM gradeable_component_data 
+                      SELECT gc_id
+                      FROM gradeable_component_data
                       WHERE gc_id=gc.gc_id)) AS array_any_grades,
                   json_agg(gcm.array_id) AS array_mark_id,
                   json_agg(gcm.array_points) AS array_mark_points,
@@ -1663,8 +1663,8 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
                     json_agg(gcm_publish) AS array_publish,
                     json_agg(gcm_order) AS array_order,
                     json_agg(EXISTS(
-                      SELECT gcm_id 
-                      FROM gradeable_component_mark_data 
+                      SELECT gcm_id
+                      FROM gradeable_component_mark_data
                       WHERE gcm_id=in_gcm.gcm_id)) AS array_any_receivers
                     FROM gradeable_component_mark AS in_gcm
                   GROUP BY gcm_gc_id
