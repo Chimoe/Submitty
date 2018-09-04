@@ -54,11 +54,12 @@ class HomePageController extends AbstractController {
 
     public function changeUserName(){
         $user = $this->core->getUser();
-        if(isset($_POST['user_name_change']))
+        var_dump($_POST);
+        if(isset($_POST['user_firstname_change']) && isset($_POST['user_lastname_change']))
         {
             $newFirstName = trim($_POST['user_firstname_change']);
             $newLastName = trim($_POST['user_lastname_change']);
-            if ($user->validateUserData('user_preferred_firstname', $newFirstName) === true) && ($user->validateUserData('user_preferred_lastname', $newLastName) === true) {
+            if ($user->validateUserData('user_preferred_firstname', $newFirstName) === true && $user->validateUserData('user_preferred_lastname', $newLastName) === true) {
 				$user->setPreferredFirstName($newFirstName);
 				$user->setPreferredLastName($newLastName);
 				//User updated flag tells auto feed to not clobber some of the users data.

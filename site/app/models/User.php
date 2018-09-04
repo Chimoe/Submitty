@@ -190,16 +190,25 @@ class User extends AbstractModel {
 
     public function setFirstName($name) {
         $this->first_name = $name;
-        $this->setDisplayedFirstName();
+        $this->setDisplayedNames();
     }
 
     /**
-     * Set the preferred name of the loaded user (does not affect db. call updateUser.)
+     * Set the preferred first name of the loaded user (does not affect DB call updateUser.)
      * @param string $name
      */
-    public function setPreferredNames($firstname, $lastname) {
+    public function setPreferredFirstName($firstname) {
         $this->preferred_first_name = $firstname;
-        $this->preferred_last_name = $lastname
+        $this->setDisplayedNames();
+    }
+
+    /**
+     * Set the preferred last name of the loaded user (does not affect DB call updateUser.)
+     * @param string $name
+     */
+
+    public function setPreferredLastName($lastname) {
+        $this->preferred_last_name = $lastname;
         $this->setDisplayedNames();
     }
 
@@ -269,10 +278,13 @@ class User extends AbstractModel {
 			return preg_match("~^[a-z0-9_\-]+$~", $data) === 1;
 		case 'user_firstname':
 		case 'user_lastname':
-		case 'user_preferred_firstname':
+			//First, Last names must be alpha characters, white-space, or certain punctuation and limited to 30 chars.
+        	return preg_match("~^[a-zA-Z'`\-\.\(\) ]+$~", $data) === 1;
+   		case 'user_preferred_firstname':
 		case 'user_preferred_lastname':
-			//First, Last, Preferred names must be alpha characters, white-space, or certain punctuation and limited to 30 chars.
-        	return preg_match("~^[a-zA-Z'`\-\.\(\) ]+$~", $data) === 1 && strlen($data) <= 30;
+			//First, Last preferred names must be "" or (alpha characters, white-space, certain punctuation), and limited to 30 chars.
+			//Regex vs. 'user_firstname'/'user_lastname' -- Class quantified by '*' (zero or more) instead of '+' (one or more).  Permits "" as valid.
+        	return preg_match("~^[a-zA-Z'`\-\.\(\) ]*$~", $data) === 1 && strlen($data) <= 30;
 		case 'user_email':
 			//Check email address for appropriate format. e.g. "user@university.edu", "user@cs.university.edu", etc.
 			return preg_match("~^[^(),:;<>@\\\"\[\]]+@(?!\-)[a-zA-Z0-9\-]+(?<!\-)(\.[a-zA-Z0-9]+)+$~", $data) === 1;

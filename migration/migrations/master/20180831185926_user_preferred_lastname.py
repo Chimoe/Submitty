@@ -76,7 +76,7 @@ def down(config, conn):
     with conn.cursor() as cursor:
 
         # Drop user_preferred_lastname from table
-    	cursor.execute("ALTER TABLE users DROP COLUMN IF EXISTS user_preferred_lastname")
+        cursor.execute("ALTER TABLE users DROP COLUMN IF EXISTS user_preferred_lastname")
 
         # Remove user_preferred_lastname from trigger function sync_courses_user()
         cursor.execute("""
