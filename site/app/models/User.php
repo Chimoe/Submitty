@@ -12,9 +12,11 @@ use app\libraries\Core;
  * @method void setAnonId(string $anon_id)
  * @method string getPassword()
  * @method string getFirstName() Get the first name of the loaded user
- * @method string getPreferredFirstName() Get the preferred name of the loaded user
- * @method string getDisplayedFirstName() Returns the preferred name if one exists and is not null or blank,
+ * @method string getPreferredNames() Get the preferred first and last name of the loaded user
+ * @method string getDisplayedFirstName() Returns the preferred first name if one exists and is not null or blank,
  *                                        otherwise return the first name field for the user.
+ * @method string getDisplayedLastName() Returns the preferred last name if one exists and is not null or blank,
+ *                                       otherwise return the first name field for the user.
  * @method string getLastName() Get the last name of the loaded user
  * @method void setLastName(string $last_name)
  * @method string getEmail()
@@ -134,7 +136,10 @@ class User extends AbstractModel {
             $this->setPreferredFirstName($details['user_preferred_firstname']);
         }
 
-        $this->last_name = $details['user_lastname'];
+        $this->setLastName($details['user_lastname']);
+        if (isset($details['user_preferred_lastname'])) {
+            $this->setPreferredLastName($details['user_preferred_lastname']);
+        }
         $this->email = $details['user_email'];
         $this->group = isset($details['user_group']) ? intval($details['user_group']) : 4;
         if ($this->group > 4 || $this->group < 0) {
@@ -190,7 +195,12 @@ class User extends AbstractModel {
 
     public function setFirstName($name) {
         $this->first_name = $name;
-        $this->setDisplayedNames();
+        $this->setDisplayedFirstName();
+    }
+
+    public function setLastName($name) {
+        $this->last_name = $name;
+        $this->setDisplayedLastName();
     }
 
     /**
@@ -199,27 +209,28 @@ class User extends AbstractModel {
      */
     public function setPreferredFirstName($firstname) {
         $this->preferred_first_name = $firstname;
-        $this->setDisplayedNames();
+        $this->setDisplayedFirstName();
     }
 
     /**
      * Set the preferred last name of the loaded user (does not affect DB call updateUser.)
      * @param string $name
      */
-
     public function setPreferredLastName($lastname) {
         $this->preferred_last_name = $lastname;
-        $this->setDisplayedNames();
+        $this->setDisplayedLastName();
     }
 
-    private function setDisplayedNames() {
+    private function setDisplayedFirstName() {
         if ($this->preferred_first_name !== "" && $this->preferred_first_name !== null) {
             $this->displayed_first_name = $this->preferred_first_name;
         }
         else {
             $this->displayed_first_name = $this->first_name;
         }
+    }
 
+    private function setDisplayedLastName() {
         if ($this->preferred_last_name !== "" && $this->preferred_last_name !== null) {
             $this->displayed_last_name = $this->preferred_last_name;
         }
