@@ -11,14 +11,15 @@ use app\libraries\Core;
  * @method void setId(string $id) Get the id of the loaded user
  * @method void setAnonId(string $anon_id)
  * @method string getPassword()
+ * @method void setFirstName(string $first_name)
  * @method string getFirstName() Get the first name of the loaded user
- * @method string getPreferredNames() Get the preferred first and last name of the loaded user
+ * @method string getPreferredFirstName() Get the preferred first name of the loaded user
  * @method string getDisplayedFirstName() Returns the preferred first name if one exists and is not null or blank,
  *                                        otherwise return the first name field for the user.
+ * @method void setLastName(string $last_name)
+ * @method string getPreferredLastName() Get the preferred last name of the loaded user
  * @method string getDisplayedLastName() Returns the preferred last name if one exists and is not null or blank,
  *                                       otherwise return the first name field for the user.
- * @method string getLastName() Get the last name of the loaded user
- * @method void setLastName(string $last_name)
  * @method string getEmail()
  * @method void setEmail(string $email)
  * @method int getGroup()
