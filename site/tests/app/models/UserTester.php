@@ -70,8 +70,8 @@ class UserTester extends \PHPUnit\Framework\TestCase {
         $this->assertEquals($details['user_preferred_firstname'], $user->getPreferredFirstName());
         $this->assertEquals($details['user_preferred_firstname'], $user->getDisplayedFirstName());
         $this->assertEquals($details['user_lastname'], $user->getLastName());
-        $this->assertEquals($details['user_preferred_lastname'], $user->getPreferredlastName());
-        $this->assertEquals($details['user_preferred_lastname'], $user->getDisplayedlastName());
+        $this->assertEquals($details['user_preferred_lastname'], $user->getPreferredLastName());
+        $this->assertEquals($details['user_preferred_lastname'], $user->getDisplayedLastName());
     }
 
     public function testPassword() {
@@ -121,6 +121,7 @@ class UserTester extends \PHPUnit\Framework\TestCase {
         ksort($actual);
         $expected = array(
             'displayed_first_name' => 'User',
+            'displayed_last_name' => 'Tester',
             'email' => 'test@example.com',
             'first_name' => 'User',
             'grading_registration_sections' => array(1,2),
