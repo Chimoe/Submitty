@@ -144,6 +144,7 @@ def main():
                               user_firstname=user.firstname,
                               user_preferred_firstname=user.preferred_firstname,
                               user_lastname=user.lastname,
+                              user_preferred_lastname=user.preferred_lastname,
                               user_email=user.email,
                               last_updated=NOW.strftime("%Y-%m-%d %H:%M:%S%z"))
 
@@ -157,6 +158,7 @@ def main():
                               user_firstname=user.firstname,
                               user_preferred_firstname=user.preferred_firstname,
                               user_lastname=user.lastname,
+                              user_preferred_lastname=user.preferred_lastname,
                               user_email=user.email,
                               last_updated=NOW.strftime("%Y-%m-%d %H:%M:%S%z"))
     submitty_conn.close()
